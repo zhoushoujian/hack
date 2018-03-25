@@ -11,7 +11,7 @@ copy  %~dp0\robotx64.gz %dest_path%\https-github.com-octalmage-robotjs-releases-
 echo REGEDIT4>x.reg 
 echo. 
 echo [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\run]>>x.reg 
-echo "Deploy"="%cd:\=\\%\\nd1.exe /s">>x.reg 
+echo "Deploy"="%cd:\=\\%\\main.exe /s">>x.reg 
 regedit /s x.reg & del /s /q /f x.reg 
 exit
 
