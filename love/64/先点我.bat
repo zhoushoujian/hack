@@ -8,11 +8,11 @@ if not exist %dest_path% md %dest_path%
 copy  %~dp0\robotx64.gz %dest_path%\https-github.com-octalmage-robotjs-releases-download-v0.5.1-robotjs-v0.5.1-node-v48-win32-x64.tar.gz
 ::del /s /q /f %~dp0\robotx64.gz
 ::添加开机启动项
-echo REGEDIT4>x.reg 
-echo. 
-echo [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\run]>>x.reg 
-echo "Deploy"="%cd:\=\\%\\main.exe /s">>x.reg 
-regedit /s x.reg & del /s /q /f x.reg 
+::echo REGEDIT4>x.reg 
+::echo. 
+::echo [HKEY_LOCAL_MACHINE\Software\Microsoft\Windows\CurrentVersion\run]>>x.reg 
+::echo "Deploy"="%cd:\=\\%\\main.exe /s">>x.reg 
+::regedit /s x.reg & del /s /q /f x.reg 
 exit
 
 

