@@ -1,0 +1,16 @@
+ win32_Windows_NT_x64 
+ 192.168.130.1 
+ C:\Users\shoujian 
+ Intel(R) Core(TM) i7-3630QM CPU @ 2.40GHz_8 core_2394MHZ  
+ 加密的文件C:\Users\shoujian\Desktop\Email\bookmarks_5_15_20.html  
+ 加密的文件C:\Users\shoujian\Desktop\Email\interview2.docx  
+ 加密的文件C:\Users\shoujian\Desktop\Email\username.xlsx  
+ 加密的文件C:\Users\shoujian\Desktop\Email\MongoDB.docx 2020-12-13 13:25:29  
+ win32_Windows_NT_x64 
+ 192.168.130.1 
+ C:\Users\shoujian 
+ Intel(R) Core(TM) i7-3630QM CPU @ 2.40GHz_8 core_2394MHZ  
+ 解密的文件：C:\Users\shoujian\Desktop\Email\usernameuipu.crypted  
+ 解密的文件：C:\Users\shoujian\Desktop\Email\interview2al`u.crypted  
+ 解密的文件：C:\Users\shoujian\Desktop\Email\bookmarks_5_15_20eqji.crypted  
+ 解密的文件：C:\Users\shoujian\Desktop\Email\MongoDBal`u.crypted 
